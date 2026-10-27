@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MercaBarrio</title>
+  <meta name="description" content="La tienda de tu barrio, a domicilio.">
+  <meta name="theme-color" content="#030d18">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23072238'/%3E%3Cpath d='M6 19c3-4 6-4 9 0s6 4 11-1' stroke='%2333c3d6' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <!-- Fondo: mar profundo con cáusticas y burbujas -->
+  <div class="oceano" aria-hidden="true">
+    <div class="corriente c1"></div>
+    <div class="corriente c2"></div>
+    <div class="corriente c3"></div>
+    <div class="burbujas"></div>
+    <div class="grano"></div>
+  </div>
+
+  <header class="barra vidrio" id="barra">
+    <a class="marca" href="#/tienda" aria-label="MercaBarrio, inicio">
+      <svg class="marca-icono" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M5 18c3.2-4.2 6.4-4.2 9.6 0s6.4 4.2 12.4-1" />
+        <path d="M5 23c3.2-4.2 6.4-4.2 9.6 0s6.4 4.2 12.4-1" opacity=".45" />
+      </svg>
+      <span>Merca<b>Barrio</b></span>
+    </a>
+
+    <nav class="pestanas" aria-label="Secciones">
+      <span class="pestanas-indicador" aria-hidden="true"></span>
+      <a href="#/tienda" data-vista="tienda">Tienda</a>
+      <a href="#/pedidos" data-vista="pedidos">Mis pedidos</a>
+      <a href="#/admin" data-vista="admin">Admin</a>
+    </nav>
+
+    <button class="boton-carrito" id="abrir-carrito" aria-label="Abrir carrito">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L20.5 8H6.2"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+      <span class="contador" id="contador-carrito" hidden>0</span>
+    </button>
+  </header>
+
+  <main id="contenido">
+    <!-- ======================= TIENDA ======================= -->
+    <section class="vista" id="vista-tienda" data-vista="tienda">
+      <div class="hero">
+        <p class="sobretitulo">Tienda de barrio · Bogotá</p>
+        <h1>Lo de siempre,<br><span class="acento">sin salir de casa.</span></h1>
+        <p class="hero-texto">Domicilio gratis desde <b data-regla="umbral_domicilio">$50.000</b> y 10&nbsp;% de descuento desde <b data-regla="umbral_descuento">$100.000</b>.</p>
+      </div>
+
+      <div class="herramientas vidrio">
+        <label class="buscador">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="buscar" type="search" placeholder="Buscar arroz, leche, jabón…" autocomplete="off" aria-label="Buscar productos">
+        </label>
+        <div class="selectores">
+          <label class="selector"><span class="sr">Impuesto</span>
+            <select id="filtro-impuesto">
+              <option value="">Todos</option>
+              <option value="exento">Canasta básica</option>
+              <option value="gravado">Con IVA</option>
+            </select>
+          </label>
+          <label class="selector"><span class="sr">Orden</span>
+            <select id="orden">
+              <option value="relevancia">Destacados</option>
+              <option value="precio_asc">Menor precio</option>
+              <option value="precio_desc">Mayor precio</option>
+              <option value="nombre">Nombre A–Z</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="chips" id="categorias" role="tablist" aria-label="Categorías">
+        <span class="chips-indicador" aria-hidden="true"></span>
+      </div>
+
+      <div class="grilla" id="grilla" aria-live="polite"></div>
+      <p class="vacio" id="sin-resultados" hidden>No encontramos productos con esos filtros.</p>
+    </section>
+
+    <!-- ======================= MIS PEDIDOS ======================= -->
+    <section class="vista" id="vista-pedidos" data-vista="pedidos" hidden>
+      <div class="hero compacto">
+        <p class="sobretitulo">Seguimiento</p>
+        <h1>Mis pedidos</h1>
+        <p class="hero-texto">Escribe el teléfono con el que compraste para ver el estado de tus pedidos.</p>
+      </div>
+      <form class="consulta vidrio" id="form-consulta">
+        <label class="campo campo-linea">
+          <span>Teléfono</span>
+          <input id="telefono-consulta" type="tel" inputmode="tel" placeholder="310 555 1234" required>
+        </label>
+        <button class="boton primario" type="submit">Consultar</button>
+      </form>
+      <div class="lista-pedidos" id="lista-pedidos"></div>
+    </section>
+
+    <!-- ======================= ADMIN ======================= -->
+    <section class="vista" id="vista-admin" data-vista="admin" hidden>
+      <div class="hero compacto">
+        <p class="sobretitulo">Panel del tendero</p>
+        <h1>Administración</h1>
+      </div>
+
+      <form class="consulta vidrio" id="form-login">
+        <label class="campo campo-linea">
+          <span>Clave de administración</span>
+          <input id="clave-admin" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        </label>
+        <button class="boton primario" type="submit">Entrar</button>
+      </form>
+
+      <div id="panel-admin" hidden>
+        <div class="kpis" id="kpis"></div>
+
+        <div class="segmentos vidrio" role="tablist">
+          <span class="segmentos-indicador" aria-hidden="true"></span>
+          <button class="activo" data-panel="admin-pedidos" role="tab">Pedidos</button>
+          <button data-panel="admin-inventario" role="tab">Inventario</button>
+          <button data-panel="admin-reporte" role="tab">Reporte</button>
+          <button class="salir" id="salir-admin" title="Cerrar sesión">Salir</button>
+        </div>
+
+        <div class="panel" id="admin-pedidos">
+          <div class="chips chips-estado" id="filtro-estados"><span class="chips-indicador" aria-hidden="true"></span></div>
+          <div class="tabla-pedidos" id="tabla-pedidos"></div>
+        </div>
+
+        <div class="panel" id="admin-inventario" hidden>
+          <div class="fila-acciones">
+            <label class="buscador vidrio">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="buscar-inventario" type="search" placeholder="Filtrar inventario…" aria-label="Filtrar inventario">
+            </label>
+            <button class="boton primario" id="nuevo-producto">+ Nuevo producto</button>
+          </div>
+          <div class="tabla-inventario vidrio" id="tabla-inventario"></div>
+        </div>
+
+        <div class="panel" id="admin-reporte" hidden>
+          <div class="reporte" id="reporte"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    MercaBarrio · Construido con XP: TDD, programación en parejas y diseño simple.
+  </footer>
+
+  <!-- ======================= CARRITO (panel lateral) ======================= -->
+  <div class="velo" id="velo" hidden></div>
+  <aside class="cajon vidrio" id="cajon" aria-label="Carrito" aria-hidden="true" inert>
+    <div class="cajon-cabecera">
+      <button class="icono-boton" id="atras-cajon" aria-label="Volver" hidden>
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <h2 id="titulo-cajon">Tu carrito</h2>
+      <button class="icono-boton" id="cerrar-cajon" aria-label="Cerrar carrito">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="pasos" id="pasos">
+      <!-- Paso 1: carrito -->
+      <div class="paso" data-paso="carrito">
+        <div class="lineas" id="lineas-carrito"></div>
+        <div class="carrito-vacio" id="carrito-vacio">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 40c6-8 12-8 18 0s12 8 26-2"/><path d="M10 48c6-8 12-8 18 0s12 8 26-2" opacity=".4"/></svg>
+          <p>Tu carrito está vacío</p>
+          <button class="boton fantasma" id="ir-a-tienda">Explorar la tienda</button>
+        </div>
+      </div>
+
+      <!-- Paso 2: datos de entrega -->
+      <div class="paso" data-paso="entrega">
+        <form id="form-entrega" class="formulario" novalidate>
+          <label class="campo"><span>Nombre completo</span>
+            <input name="nombre" autocomplete="name" required minlength="3" placeholder="Ana Gómez"></label>
+          <label class="campo"><span>Teléfono</span>
+            <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required placeholder="310 555 1234"></label>
+          <label class="campo"><span>Dirección de entrega</span>
+            <input name="direccion" autocomplete="street-address" required minlength="5" placeholder="Calle 45 # 12-30, apto 201"></label>
+          <label class="campo"><span>Notas para el domiciliario <i>(opcional)</i></span>
+            <textarea name="notas" rows="2" maxlength="280" placeholder="Timbre dañado, llamar al llegar"></textarea></label>
+          <p class="error-form" id="error-entrega" role="alert"></p>
+        </form>
+      </div>
+
+      <!-- Paso 3: confirmación -->
+      <div class="paso" data-paso="listo">
+        <div class="confirmacion">
+          <svg class="check" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="24"/><path d="m15 27 7 7 15-16"/>
+          </svg>
+          <h3>¡Pedido recibido!</h3>
+          <p id="texto-confirmacion"></p>
+          <button class="boton fantasma" id="ver-mis-pedidos">Ver mis pedidos</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="resumen" id="resumen">
+      <div class="metas" id="metas">
+        <div class="meta" data-meta="domicilio_gratis">
+          <div class="meta-texto"><span class="meta-etiqueta"></span></div>
+          <div class="meta-barra"><i></i></div>
+        </div>
+        <div class="meta" data-meta="descuento">
+          <div class="meta-texto"><span class="meta-etiqueta"></span></div>
+          <div class="meta-barra"><i></i></div>
+        </div>
+      </div>
+      <dl class="desglose">
+        <div><dt>Subtotal</dt><dd data-campo="subtotal">$0</dd></div>
+        <div class="ahorro" data-fila="descuento"><dt>Descuento 10&nbsp;%</dt><dd data-campo="descuento">$0</dd></div>
+        <div><dt>IVA 19&nbsp;%</dt><dd data-campo="iva">$0</dd></div>
+        <div><dt>Domicilio</dt><dd data-campo="domicilio">$0</dd></div>
+        <div class="total"><dt>Total</dt><dd data-campo="total">$0</dd></div>
+      </dl>
+      <p class="aviso-stock" id="aviso-stock" role="alert" hidden></p>
+      <button class="boton primario ancho" id="accion-cajon" disabled>
+        <span class="boton-texto">Continuar</span>
+        <span class="girador" aria-hidden="true"></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================= MODAL ======================= -->
+  <div class="modal-capa" id="modal-capa" hidden>
+    <div class="modal vidrio" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"></div>
+  </div>
+
+  <div class="tostadas" id="tostadas" aria-live="polite"></div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

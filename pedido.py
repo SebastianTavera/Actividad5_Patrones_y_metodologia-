@@ -80,3 +80,7 @@ def desglose_pedido(items: list[Item]) -> Desglose:
 
 def total_pedido(items: list[Item]) -> int:
     return desglose_pedido(items).total
+
+
+def precio_publico(precio, gravado):
+    return precio

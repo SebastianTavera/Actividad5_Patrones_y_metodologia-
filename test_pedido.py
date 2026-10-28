@@ -3,7 +3,7 @@
 # Los casos marcados con (*) son casos límite: valores justo en el umbral de una regla.
 import pytest
 
-from pedido import Item, total_pedido
+from pedido import Item, desglose_pedido, total_pedido
 
 
 # --- Lista de referencia del kata (pruebas 1 a 8) ---------------------------
@@ -89,4 +89,14 @@ def test_item_invalido_entre_validos_rechaza_todo():       # 17 · R5
 def test_error_nombra_el_producto_invalido():              # 18 · R5
     with pytest.raises(ValueError, match="pan"):
         total_pedido([Item("pan", 3_000, 0)])
+
+
+# --- Desglose: el mismo cálculo explicado línea por línea (lo usa la tienda) -
+
+def test_desglose_de_pedido_mixto():                       # 19
+    items = [Item("gaseosa", 80_000, 1), Item("arroz", 40_000, 1, gravado=False)]
+    d = desglose_pedido(items)
+    assert (d.subtotal, d.descuento, d.iva, d.domicilio, d.total) == (
+        120_000, 12_000, 13_680, 0, 121_680,
+    )
 

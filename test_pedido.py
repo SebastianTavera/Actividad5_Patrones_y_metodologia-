@@ -11,3 +11,7 @@ from pedido import Item, total_pedido
 def test_carrito_vacio_cuesta_cero():                      # 1 · R1
     assert total_pedido([]) == 0
 
+
+def test_un_producto_exento():                             # 2 · R1, R2
+    assert total_pedido([Item("arroz", 60_000, 1, gravado=False)]) == 60_000
+

@@ -11,4 +11,4 @@ class Item:
 
 
 def total_pedido(items):
-    return 0
+    return sum(i.precio for i in items)

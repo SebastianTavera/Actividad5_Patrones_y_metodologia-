@@ -13,7 +13,10 @@ class Item:
 
 
 def total_pedido(items):
+    if not items:
+        return 0
     subtotal = sum(i.precio * i.cantidad for i in items)
     base_gravada = sum(i.precio * i.cantidad for i in items if i.gravado)
     iva = base_gravada * TASA_IVA
-    return round(subtotal + iva)
+    domicilio = 4_000 if subtotal < 50_000 else 0
+    return round(subtotal + iva + domicilio)

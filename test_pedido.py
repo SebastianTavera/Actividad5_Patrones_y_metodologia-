@@ -59,3 +59,8 @@ def test_justo_bajo_el_umbral_de_descuento():              # 11 · R3 (*) refuer
 def test_descuento_en_el_umbral_con_producto_gravado():    # 12 · R2 + R3 (*)
     assert total_pedido([Item("licuadora", 100_000, 1)]) == 107_100
 
+
+def test_redondeo_al_peso_mas_cercano():                   # 13 · R6
+    # 10.001 + 1.900,19 de IVA + 4.000 de domicilio = 15.901,19 -> 15.901
+    assert total_pedido([Item("jabon", 10_001, 1)]) == 15_901
+

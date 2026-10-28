@@ -100,3 +100,7 @@ def test_desglose_de_pedido_mixto():                       # 19
         120_000, 12_000, 13_680, 0, 121_680,
     )
 
+
+def test_desglose_de_carrito_vacio_es_todo_cero():         # 20
+    d = desglose_pedido([])
+    assert (d.subtotal, d.descuento, d.iva, d.domicilio, d.total) == (0, 0, 0, 0, 0)

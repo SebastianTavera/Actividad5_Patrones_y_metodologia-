@@ -27,3 +27,7 @@ def test_producto_gravado_paga_iva():                      # 4 · R2
 def test_cobro_de_domicilio_bajo_el_umbral():              # 5 · R4
     assert total_pedido([Item("arroz", 20_000, 1, gravado=False)]) == 24_000
 
+
+def test_descuento_en_el_umbral():                         # 6 · R3 (*)
+    assert total_pedido([Item("arroz", 100_000, 1, gravado=False)]) == 90_000
+

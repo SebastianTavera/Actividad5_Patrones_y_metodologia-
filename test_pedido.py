@@ -85,3 +85,8 @@ def test_item_invalido_entre_validos_rechaza_todo():       # 17 · R5
     with pytest.raises(ValueError):
         total_pedido([Item("arroz", 10_000, 1, gravado=False), Item("pan", 3_000, 0)])
 
+
+def test_error_nombra_el_producto_invalido():              # 18 · R5
+    with pytest.raises(ValueError, match="pan"):
+        total_pedido([Item("pan", 3_000, 0)])
+

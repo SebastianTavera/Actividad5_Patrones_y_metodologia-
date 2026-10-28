@@ -41,3 +41,9 @@ def test_cantidad_cero_es_invalida():                      # 8 · R5 (*)
     with pytest.raises(ValueError):
         total_pedido([Item("arroz", 10_000, 0, gravado=False)])
 
+
+# --- Casos límite propios (los que la lista de referencia no tenía) ---------
+
+def test_domicilio_gratis_en_el_umbral_exacto():           # 9 · R4 (*) mata al mutante M2
+    assert total_pedido([Item("arroz", 50_000, 1, gravado=False)]) == 50_000
+

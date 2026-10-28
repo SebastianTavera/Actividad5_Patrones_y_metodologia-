@@ -23,3 +23,7 @@ def test_cantidad_multiplica_precio():                     # 3 · R1
 def test_producto_gravado_paga_iva():                      # 4 · R2
     assert total_pedido([Item("gaseosa", 60_000, 1)]) == 71_400
 
+
+def test_cobro_de_domicilio_bajo_el_umbral():              # 5 · R4
+    assert total_pedido([Item("arroz", 20_000, 1, gravado=False)]) == 24_000
+

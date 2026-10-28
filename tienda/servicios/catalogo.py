@@ -7,6 +7,8 @@ ORDENES = {
     "precio_asc": lambda p: p.precio,
     "precio_desc": lambda p: -p.precio,
     "nombre": lambda p: p.nombre.lower(),
+    "calificacion": lambda p: (-p.calificacion, -p.resenas),
+    "descuento": lambda p: (-p.descuento_pct, p.precio),
 }
 
 

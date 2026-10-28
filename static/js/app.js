@@ -1,6 +1,6 @@
 // Punto de entrada: enrutador por hash y composición de las vistas.
 import { api } from './api.js';
-import { activarReflejo, crearBurbujas, cruzar, moverIndicador } from './anim.js';
+import { activarLuz, activarOndas, activarReflejo, cruzar, moverIndicador } from './anim.js';
 import { iniciarAdmin, mostrarAdmin } from './admin.js';
 import { iniciarCajon } from './cajon.js';
 import { dinero } from './formato.js';
@@ -52,7 +52,8 @@ function barraAlDesplazar() {
 }
 
 async function iniciar() {
-  crearBurbujas(document.querySelector('.burbujas'));
+  activarLuz(document.querySelector('.luz-principal'), document.querySelector('.luz-eco'));
+  activarOndas();
   activarReflejo();
   barraAlDesplazar();
 

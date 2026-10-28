@@ -87,10 +87,10 @@ function htmlLinea(l, faltante) {
     <div class="miniatura" style="--h:${icono(l.categoria).h}">${svgCategoria(l.categoria)}</div>
     <div>
       <h4>${html(l.nombre)}</h4>
-      <div class="detalle ${faltante ? 'falta' : ''}">${faltante ? `Solo quedan ${faltante.disponible}` : `${dinero(l.precio)} c/u${l.gravado ? ' · +IVA' : ''}`}</div>
+      <div class="detalle ${faltante ? 'falta' : ''}">${faltante ? `Solo quedan ${faltante.disponible}` : `${dinero(l.precio_final)} c/u${l.gravado ? ' · IVA incl.' : ''}`}</div>
     </div>
     <div class="linea-derecha">
-      <span class="linea-importe">${dinero(l.importe)}</span>
+      <span class="linea-importe">${dinero(l.importe_final)}</span>
       <div class="stepper">
         <button data-d="-1" aria-label="Quitar uno de ${html(l.nombre)}">${MENOS}</button>
         <span class="valor">${l.cantidad}</span>
@@ -149,6 +149,21 @@ function pintarResumen(datos) {
   aviso.textContent = datos.sin_stock.length
     ? `Ajusta las cantidades: ${datos.sin_stock.map((f) => `${f.nombre} (quedan ${f.disponible})`).join(', ')}.`
     : '';
+  pintarBarra(datos.total);
+}
+
+/** Barra fija del celular: cuántos productos llevas y el total, siempre a la vista. */
+function pintarBarra(total) {
+  const n = carrito.unidades;
+  const barra = $('barra-carrito');
+  const visible = n > 0;
+  barra.classList.toggle('visible', visible);
+  barra.tabIndex = visible ? 0 : -1;
+  barra.setAttribute('aria-hidden', String(!visible));
+  document.body.classList.toggle('con-barra', visible);
+  $('barra-unidades').textContent = n;
+  $('barra-palabra').textContent = n === 1 ? 'producto' : 'productos';
+  contar($('barra-total'), total, dinero, 500);
 }
 
 async function cotizar() {
@@ -243,6 +258,7 @@ export function iniciarCajon({ comprado, verPedidos }) {
   irA('carrito', { instantaneo: true });
 
   $('abrir-carrito').addEventListener('click', abrirCajon);
+  $('barra-carrito').addEventListener('click', abrirCajon);
   $('cerrar-cajon').addEventListener('click', cerrarCajon);
   velo.addEventListener('click', cerrarCajon);
   document.addEventListener('keydown', (e) => {

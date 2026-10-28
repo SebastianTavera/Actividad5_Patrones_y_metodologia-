@@ -14,7 +14,7 @@
 Cómo reproducir la evidencia:
 
 ```bash
-python -m pytest -q test_pedido.py           # kata: 20 pruebas propias
+python -m pytest -q test_pedido.py           # kata: 23 pruebas propias
 python -m pytest -q test_suite_oculta.py     # suite de aceptación: 8 pruebas
 python scripts/mutantes.py                   # mutantes M1, M2, M3
 python -m pytest -q                          # todo el proyecto (kata + tienda)
@@ -57,6 +57,9 @@ Lista ordenada (de lo más trivial a lo más complejo). `*` = caso límite (valo
 | 18 | El error nombra el producto | pan × 0 | `ValueError` que menciona "pan" | R5 |
 | 19 | Desglose del pedido mixto | caso 7 | subtotal 120.000, descuento 12.000, IVA 13.680, domicilio 0 | todas |
 | 20 | Desglose del carrito vacío | ninguno | todo en 0 | R1 |
+| 21 | Precio público de un exento | arroz 4.900 | 4.900 | R2 |
+| 22 | Precio público de un gravado | gaseosa 6.900 | 8.211 | R2 + R6 |
+| 23 | Precio público desde medio peso `*` | 50.150 gravado (59.678,5) | 59.679 | R6 |
 
 **Comparación con la lista de referencia.** A la referencia (casos 1–8) le faltaban los casos 9–18. El más
 importante es la **respuesta a la pregunta de discusión**: el caso límite de R4 que no aparece en la referencia
@@ -155,7 +158,7 @@ tabla de resultados esperados de la guía).
 
 | Pareja | Pruebas propias | Fallas en la suite oculta (de 8) | Mutantes detectados (de 3) | Minutos del kata |
 |---|---|---|---|---|
-| A + B | 20 | 0 | 3 | ___ |
+| A + B | 23 | 0 | 3 | ___ |
 
 Hallazgo adicional: la solución de referencia de la guía (con `float` y `round()`) **falla** nuestra prueba 14
 (devuelve 59.678 en vez de 59.679). La suite oculta no lo detecta porque ninguno de sus casos cae exactamente

@@ -241,3 +241,29 @@ def test_reportes_excluyen_cancelados(servicio_pedidos, productos, pedidos_repo)
     assert resumen["pedidos"] == 1
     assert resumen["ingresos"] == 80_000
     assert resumen["mas_vendidos"] == [{"nombre": "Leche", "unidades": 2}]
+
+
+# --- Detalle comercial del producto ------------------------------------------
+
+def test_descuento_porcentual_se_calcula_del_precio_anterior():
+    assert Producto(1, "Café", 15_400, "Despensa", precio_anterior=18_900).descuento_pct == 19
+    assert Producto(1, "Sal", 1_800, "Despensa").descuento_pct == 0
+
+
+def test_precio_anterior_menor_al_actual_es_invalido(productos):
+    with pytest.raises(DatosInvalidos, match="precio anterior"):
+        InventarioServicio(productos, productos).actualizar(1, {"precio_anterior": 4_000})
+
+
+def test_inventario_guarda_caracteristicas_sin_filas_vacias(productos):
+    p = InventarioServicio(productos, productos).actualizar(
+        1, {"caracteristicas": [["Tipo", "Grano largo"], ["", ""], ["Origen", "Tolima"]]})
+    assert p.caracteristicas == [("Tipo", "Grano largo"), ("Origen", "Tolima")]
+
+
+def test_catalogo_ordena_por_calificacion_y_descuento(productos):
+    productos.datos[1].calificacion, productos.datos[3].calificacion = 4.9, 4.2
+    productos.datos[2].precio_anterior = 100_000
+    servicio = CatalogoServicio(productos)
+    assert servicio.buscar(orden="calificacion")[0].nombre == "Arroz"
+    assert servicio.buscar(orden="descuento")[0].nombre == "Gaseosa"

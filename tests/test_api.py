@@ -99,3 +99,40 @@ def test_admin_avanza_estado_y_rechaza_transicion_invalida(cliente):
     assert cliente.patch(url, headers=ADMIN, json={"estado": "preparando"}).get_json()["estado"] == "preparando"
     resumen = cliente.get("/api/admin/resumen", headers=ADMIN).get_json()
     assert resumen["pedidos"] == 1 and resumen["por_estado"]["preparando"] == 1
+
+
+def test_productos_traen_calificacion_oferta_y_caracteristicas(cliente):
+    cafe = next(p for p in cliente.get("/api/productos").get_json() if p["nombre"] == "Café tostado molido")
+    assert cafe["calificacion"] == 4.9 and cafe["resenas"] > 0
+    assert cafe["precio_anterior"] == 18_900 and cafe["descuento_pct"] == 19
+    assert ["Origen", "Huila"] in cafe["caracteristicas"]
+
+
+def test_base_de_la_version_anterior_se_migra_y_completa(tmp_path):
+    import sqlite3
+    ruta = tmp_path / "vieja.db"
+    con = sqlite3.connect(ruta)
+    con.executescript("""
+        CREATE TABLE productos (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL,
+            precio INTEGER NOT NULL, categoria TEXT NOT NULL, gravado INTEGER NOT NULL DEFAULT 1,
+            stock INTEGER NOT NULL DEFAULT 0, descripcion TEXT NOT NULL DEFAULT '',
+            unidad TEXT NOT NULL DEFAULT 'und', activo INTEGER NOT NULL DEFAULT 1);
+        INSERT INTO productos (nombre, precio, categoria, gravado, stock) VALUES ('Panela', 3200, 'Despensa', 0, 60);
+    """)
+    con.close()
+    datos = crear_app(ruta_db=str(ruta), clave_admin="x").test_client().get("/api/productos").get_json()
+    assert datos[0]["nombre"] == "Panela" and datos[0]["calificacion"] == 4.9
+
+
+def test_catalogo_muestra_precio_con_iva_incluido(cliente):
+    datos = {p["nombre"]: p for p in cliente.get("/api/productos").get_json()}
+    assert datos["Gaseosa cola"]["precio_final"] == 8_211          # 6.900 + 19 %
+    assert datos["Arroz blanco"]["precio_final"] == 4_900          # canasta básica, sin IVA
+    assert datos["Gaseosa cola"]["precio_anterior_final"] == 9_401
+
+
+def test_lineas_del_carrito_traen_importe_con_iva(cliente):
+    gaseosa = _id(cliente, "Gaseosa cola")
+    datos = cliente.post("/api/carrito/cotizar", json={"items": [{"producto_id": gaseosa, "cantidad": 2}]}).get_json()
+    assert datos["lineas"][0]["importe_final"] == 16_422
+    assert datos["total"] == 16_422 + 4_000

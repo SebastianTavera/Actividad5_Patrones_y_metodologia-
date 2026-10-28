@@ -6,6 +6,7 @@ import { abrirModal, cerrarModal, confirmar, conCarga, tostada } from './ui.js';
 
 const $ = (id) => document.getElementById(id);
 const CLAVE_SESION = 'mercabarrio.admin';
+const SALTO = String.fromCharCode(10);   // una característica por línea en el formulario
 const ACCIONES = { preparando: 'Preparar', en_camino: 'Enviar', entregado: 'Entregado', cancelado: 'Cancelar' };
 const segmentos = document.querySelector('.segmentos');
 const chipsEstado = $('filtro-estados');
@@ -107,7 +108,7 @@ function filaProducto(p) {
       <td><b>${html(p.nombre)}</b><br><small style="color:var(--texto-3)">${html(p.unidad)}</small></td>
       <td>${html(p.categoria)}</td>
       <td>${p.gravado ? 'IVA 19 %' : '<span style="color:var(--exito)">Exento</span>'}</td>
-      <td class="num">${dinero(p.precio)}</td>
+      <td class="num">${dinero(p.precio)}${p.descuento_pct ? `<br><small style="color:var(--cian-vivo)">-${p.descuento_pct}%</small>` : ''}</td>
       <td class="num"><span class="${p.stock < 10 ? 'bajo' : ''}">${p.stock}</span></td>
       <td><div class="acciones">
         <button class="boton mini fantasma" data-editar>Editar</button>
@@ -134,11 +135,13 @@ function formularioProducto(p) {
     <form class="form-producto" novalidate>
       <label class="campo completo"><span>Nombre</span><input name="nombre" required value="${html(p.nombre)}" autofocus></label>
       <label class="campo"><span>Precio (COP, sin IVA)</span><input name="precio" type="number" min="1" step="1" required value="${p.precio ?? ''}"></label>
+      <label class="campo"><span>Precio anterior <i>(tachado, 0 = sin oferta)</i></span><input name="precio_anterior" type="number" min="0" step="1" value="${p.precio_anterior ?? 0}"></label>
       <label class="campo"><span>Stock</span><input name="stock" type="number" min="0" step="1" required value="${p.stock ?? 0}"></label>
       <label class="campo"><span>Categoría</span><input name="categoria" list="lista-categorias" required value="${html(p.categoria)}">
         <datalist id="lista-categorias">${categorias.map((c) => `<option value="${html(c)}">`).join('')}</datalist></label>
       <label class="campo"><span>Presentación</span><input name="unidad" value="${html(p.unidad ?? 'und')}"></label>
       <label class="campo completo"><span>Descripción</span><textarea name="descripcion" rows="2">${html(p.descripcion)}</textarea></label>
+      <label class="campo completo"><span>Características <i>(una por línea: Etiqueta: valor)</i></span><textarea name="caracteristicas" rows="4" placeholder="Origen: Huila">${html((p.caracteristicas ?? []).map(([e, v]) => `${e}: ${v}`).join(SALTO))}</textarea></label>
       <label class="interruptor completo"><input type="checkbox" name="gravado" ${p.gravado ?? true ? 'checked' : ''}> Producto gravado con IVA 19 % (desmarcar si es canasta básica)</label>
       <p class="error-form completo" role="alert"></p>
       <div class="acciones">
@@ -160,7 +163,10 @@ function editarProducto(producto, origen) {
         const datos = {
           nombre: d.get('nombre'), precio: Number(d.get('precio')), stock: Number(d.get('stock')),
           categoria: d.get('categoria'), unidad: d.get('unidad'), descripcion: d.get('descripcion'),
-          gravado: d.get('gravado') === 'on',
+          gravado: d.get('gravado') === 'on', precio_anterior: Number(d.get('precio_anterior') || 0),
+          caracteristicas: String(d.get('caracteristicas')).split(SALTO)
+            .map((linea) => linea.split(':')).filter((partes) => partes.length >= 2)
+            .map(([etiqueta, ...valor]) => [etiqueta.trim(), valor.join(':').trim()]),
         };
         try {
           await conCarga(e.submitter, producto?.id

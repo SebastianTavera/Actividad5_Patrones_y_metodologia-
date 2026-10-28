@@ -13,13 +13,10 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23072238'/%3E%3Cpath d='M6 19c3-4 6-4 9 0s6 4 11-1' stroke='%2333c3d6' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 </head>
 <body>
-  <!-- Fondo: mar profundo con cáusticas y burbujas -->
+  <!-- Fondo: mar profundo con un difuminado de luz que sigue al puntero -->
   <div class="oceano" aria-hidden="true">
-    <div class="corriente c1"></div>
-    <div class="corriente c2"></div>
-    <div class="corriente c3"></div>
-    <div class="burbujas"></div>
-    <div class="grano"></div>
+    <div class="luz luz-principal"></div>
+    <div class="luz luz-eco"></div>
   </div>
 
   <header class="barra vidrio" id="barra">
@@ -69,11 +66,21 @@
           <label class="selector"><span class="sr">Orden</span>
             <select id="orden">
               <option value="relevancia">Destacados</option>
+              <option value="calificacion">Mejor calificados</option>
+              <option value="descuento">Mayor descuento</option>
               <option value="precio_asc">Menor precio</option>
               <option value="precio_desc">Mayor precio</option>
               <option value="nombre">Nombre A–Z</option>
             </select>
           </label>
+          <div class="vistas" role="group" aria-label="Forma de ver los productos">
+            <button class="vista-boton" data-vista="lista" aria-label="Ver en lista" title="Lista">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="5" height="5" rx="1.5"/><rect x="3" y="15" width="5" height="5" rx="1.5"/><path d="M11 6.5h10M11 17.5h10"/></svg>
+            </button>
+            <button class="vista-boton" data-vista="cuadricula" aria-label="Ver en cuadrícula" title="Cuadrícula">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -81,7 +88,8 @@
         <span class="chips-indicador" aria-hidden="true"></span>
       </div>
 
-      <div class="grilla" id="grilla" aria-live="polite"></div>
+      <p class="conteo" id="conteo" aria-live="polite"></p>
+      <div class="grilla" id="grilla"></div>
       <p class="vacio" id="sin-resultados" hidden>No encontramos productos con esos filtros.</p>
     </section>
 
@@ -219,7 +227,7 @@
         </div>
       </div>
       <dl class="desglose">
-        <div><dt>Subtotal</dt><dd data-campo="subtotal">$0</dd></div>
+        <div><dt>Subtotal sin IVA</dt><dd data-campo="subtotal">$0</dd></div>
         <div class="ahorro" data-fila="descuento"><dt>Descuento 10&nbsp;%</dt><dd data-campo="descuento">$0</dd></div>
         <div><dt>IVA 19&nbsp;%</dt><dd data-campo="iva">$0</dd></div>
         <div><dt>Domicilio</dt><dd data-campo="domicilio">$0</dd></div>
@@ -239,6 +247,12 @@
   </div>
 
   <div class="tostadas" id="tostadas" aria-live="polite"></div>
+
+  <!-- Barra fija del carrito (solo en celular) -->
+  <button class="barra-carrito" id="barra-carrito" tabindex="-1" aria-hidden="true">
+    <span class="barra-carrito-cuenta"><b id="barra-unidades">0</b> <span id="barra-palabra">productos</span></span>
+    <span class="barra-carrito-accion">Ver carrito · <b id="barra-total">$0</b></span>
+  </button>
 
   <script type="module" src="/static/js/app.js"></script>
 </body>

@@ -2,6 +2,8 @@
 from dataclasses import dataclass
 
 TASA_IVA = 0.19
+UMBRAL_DOMICILIO = 50_000
+COSTO_DOMICILIO = 4_000
 
 
 @dataclass(frozen=True)
@@ -18,5 +20,5 @@ def total_pedido(items):
     subtotal = sum(i.precio * i.cantidad for i in items)
     base_gravada = sum(i.precio * i.cantidad for i in items if i.gravado)
     iva = base_gravada * TASA_IVA
-    domicilio = 4_000 if subtotal < 50_000 else 0
+    domicilio = COSTO_DOMICILIO if subtotal < UMBRAL_DOMICILIO else 0
     return round(subtotal + iva + domicilio)

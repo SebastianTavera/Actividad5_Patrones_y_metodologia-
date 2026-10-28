@@ -11,4 +11,6 @@ class Item:
 
 
 def total_pedido(items):
-    return sum(i.precio * i.cantidad for i in items)
+    subtotal = sum(i.precio * i.cantidad for i in items)
+    base_gravada = sum(i.precio * i.cantidad for i in items if i.gravado)
+    return round(subtotal + base_gravada * 0.19)

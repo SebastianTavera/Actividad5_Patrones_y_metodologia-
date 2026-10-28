@@ -64,3 +64,9 @@ def test_redondeo_al_peso_mas_cercano():                   # 13 · R6
     # 10.001 + 1.900,19 de IVA + 4.000 de domicilio = 15.901,19 -> 15.901
     assert total_pedido([Item("jabon", 10_001, 1)]) == 15_901
 
+
+def test_redondeo_hacia_arriba_desde_medio_peso():         # 14 · R6 (*)
+    # 50.150 + 9.528,5 de IVA = 59.678,5 -> 59.679 (redondeo comercial).
+    # round() de Python usa redondeo bancario y daría 59.678.
+    assert total_pedido([Item("aceite", 50_150, 1)]) == 59_679
+

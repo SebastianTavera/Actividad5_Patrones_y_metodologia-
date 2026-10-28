@@ -3,7 +3,7 @@
 # Los casos marcados con (*) son casos límite: valores justo en el umbral de una regla.
 import pytest
 
-from pedido import Item, desglose_pedido, total_pedido
+from pedido import Item, desglose_pedido, precio_publico, total_pedido
 
 
 # --- Lista de referencia del kata (pruebas 1 a 8) ---------------------------
@@ -104,3 +104,9 @@ def test_desglose_de_pedido_mixto():                       # 19
 def test_desglose_de_carrito_vacio_es_todo_cero():         # 20
     d = desglose_pedido([])
     assert (d.subtotal, d.descuento, d.iva, d.domicilio, d.total) == (0, 0, 0, 0, 0)
+
+
+# --- Precio que ve el cliente: IVA incluido, redondeado al peso -------------
+
+def test_precio_publico_de_producto_exento_no_cambia():   # 21 · R2
+    assert precio_publico(4_900, gravado=False) == 4_900

@@ -114,3 +114,7 @@ def test_precio_publico_de_producto_exento_no_cambia():   # 21 · R2
 
 def test_precio_publico_de_producto_gravado_incluye_iva():  # 22 · R2 + R6
     assert precio_publico(6_900, gravado=True) == 8_211
+
+
+def test_precio_publico_redondea_hacia_arriba_desde_medio_peso():  # 23 · R6 (*)
+    assert precio_publico(50_150, gravado=True) == 59_679

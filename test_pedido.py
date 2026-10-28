@@ -36,3 +36,8 @@ def test_pedido_mixto_descuento_antes_del_iva():           # 7 · R2 + R3
     items = [Item("gaseosa", 80_000, 1), Item("arroz", 40_000, 1, gravado=False)]
     assert total_pedido(items) == 121_680
 
+
+def test_cantidad_cero_es_invalida():                      # 8 · R5 (*)
+    with pytest.raises(ValueError):
+        total_pedido([Item("arroz", 10_000, 0, gravado=False)])
+

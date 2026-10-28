@@ -36,6 +36,9 @@ Convención de los mensajes:
 | 18 | el error nombra el producto inválido (R5) | Sí, falló primero | 1 failed, 17 passed | 18 passed | Sí: Funciones pequeñas con nombre de regla: _validar_cantidades, _tasa_descuento, _domicilio; tipos y docstring. |
 | 19 | desglose del pedido mixto | Sí, falló primero | 1 error | 19 passed | No |
 | 20 | desglose del carrito vacío | No (ya cubierta) | — | 20 passed | No |
+| 21 | precio público de un exento (R2) | Sí, falló primero | 1 error | 21 passed | No |
+| 22 | precio público de un gravado (R2+R6) | Sí, falló primero | 1 failed, 21 passed | 22 passed | No |
+| 23 | precio público desde medio peso (R6) | No (ya cubierta) | — | 23 passed | No |
 
 ## Verificación final
 
@@ -95,6 +98,12 @@ c582634 PRUEBA 17 (caso límite, pasa sin código nuevo): ítem inválido entre 
 1a666d8 PRUEBA 20 (caso límite, pasa sin código nuevo): desglose del carrito vacío
 a888a1b Paso 4.1: suite de aceptación oculta
 036afd3 Paso 4.2: prueba de mutación M1-M3
+2242a44 Bitácora de evidencia TDD generada desde el historial
+ba0e473 ROJO prueba 21: precio público de un producto exento (R2)
+7a4b9f8 VERDE prueba 21: precio público de un producto exento (R2)
+34cbd84 ROJO prueba 22: precio público de un gravado incluye IVA (R2+R6)
+8ffa4e1 VERDE prueba 22: precio público de un gravado incluye IVA (R2+R6)
+5d7f56c PRUEBA 23 (caso límite, pasa sin código nuevo): precio público desde medio peso (R6)
 ```
 
 Para revisar un paso: `git show <hash>`; para ver el estado del código en un paso: `git checkout <hash>`.

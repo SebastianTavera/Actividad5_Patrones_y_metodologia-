@@ -19,3 +19,7 @@ def test_un_producto_exento():                             # 2 · R1, R2
 def test_cantidad_multiplica_precio():                     # 3 · R1
     assert total_pedido([Item("arroz", 30_000, 2, gravado=False)]) == 60_000
 
+
+def test_producto_gravado_paga_iva():                      # 4 · R2
+    assert total_pedido([Item("gaseosa", 60_000, 1)]) == 71_400
+

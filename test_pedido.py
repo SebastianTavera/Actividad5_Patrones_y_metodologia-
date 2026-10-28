@@ -80,3 +80,8 @@ def test_cantidad_negativa_es_invalida():                  # 16 · R5
     with pytest.raises(ValueError):
         total_pedido([Item("arroz", 10_000, -2, gravado=False)])
 
+
+def test_item_invalido_entre_validos_rechaza_todo():       # 17 · R5
+    with pytest.raises(ValueError):
+        total_pedido([Item("arroz", 10_000, 1, gravado=False), Item("pan", 3_000, 0)])
+

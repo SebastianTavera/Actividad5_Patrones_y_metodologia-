@@ -26,7 +26,7 @@ def total_pedido(items):
         return 0
     for item in items:
         if item.cantidad <= 0:
-            raise ValueError("Cantidad inválida")
+            raise ValueError(f"Cantidad inválida para {item.nombre}")
     subtotal = sum(i.precio * i.cantidad for i in items)
     base_gravada = sum(i.precio * i.cantidad for i in items if i.gravado)
     tasa = TASA_DESCUENTO if subtotal >= UMBRAL_DESCUENTO else Decimal(0)

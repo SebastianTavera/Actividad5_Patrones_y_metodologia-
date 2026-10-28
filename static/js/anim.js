@@ -151,15 +151,71 @@ export function activarReflejo() {
   }, { passive: true });
 }
 
-export function crearBurbujas(contenedor, cantidad = 16) {
+/** Fondo: dos luces difusas siguen al puntero con inercia (la segunda, más lenta). */
+export function activarLuz(principal, eco) {
   if (reducido()) return;
-  for (let i = 0; i < cantidad; i++) {
-    const b = document.createElement('span');
-    const tam = 4 + Math.random() * 14;
-    Object.assign(b.style, {
-      width: `${tam}px`, height: `${tam}px`, left: `${Math.random() * 100}%`,
-      animationDuration: `${16 + Math.random() * 22}s`, animationDelay: `${-Math.random() * 30}s`,
+  const destino = { x: innerWidth * 0.5, y: innerHeight * 0.3 };
+  const a = { ...destino }, b = { ...destino };
+  let quieto = true;
+  addEventListener('pointermove', (e) => { destino.x = e.clientX; destino.y = e.clientY; quieto = false; }, { passive: true });
+  const t0 = performance.now();
+  const paso = (ahora) => {
+    if (quieto) {                       // sin puntero (táctil): deriva lenta
+      const t = (ahora - t0) / 1000;
+      destino.x = innerWidth * (0.5 + 0.25 * Math.sin(t * 0.21));
+      destino.y = innerHeight * (0.35 + 0.15 * Math.cos(t * 0.17));
+    }
+    a.x += (destino.x - a.x) * 0.08; a.y += (destino.y - a.y) * 0.08;
+    b.x += (innerWidth - destino.x - b.x) * 0.025; b.y += (innerHeight * 0.9 - destino.y * 0.4 - b.y) * 0.025;
+    principal.style.transform = `translate3d(${a.x}px, ${a.y}px, 0)`;
+    eco.style.transform = `translate3d(${b.x}px, ${b.y}px, 0)`;
+    requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+/** Aparición rápida y escalonada al entrar en pantalla. Quien llama decide qué elementos
+ *  son nuevos: los que ya se vieron aparecen sin animación. */
+let observador = null;
+export function revelar(elementos) {
+  const lista = [...elementos];
+  if (!lista.length || reducido() || !('IntersectionObserver' in window)) return;
+  observador ??= new IntersectionObserver((entradas) => {
+    entradas.filter((e) => e.isIntersecting).forEach((e, orden) => {
+      const el = e.target;
+      observador.unobserve(el);
+      el.style.setProperty('--i', Math.min(orden, 8));
+      el.classList.add('aparece');
+      setTimeout(() => el.classList.remove('revelable', 'aparece'), 1000 + Math.min(orden, 8) * 35);
     });
-    contenedor.append(b);
-  }
+  }, { rootMargin: '0px 0px -4% 0px', threshold: 0.05 });
+  lista.forEach((el) => { el.classList.add('revelable'); observador.observe(el); });
+}
+
+/** Difumina los bordes de una fila deslizable para indicar que hay más contenido a los lados. */
+export function deslizable(el) {
+  const actualizar = () => {
+    const resto = el.scrollWidth - el.clientWidth - el.scrollLeft;
+    el.classList.toggle('hay-izquierda', el.scrollLeft > 4);
+    el.classList.toggle('hay-derecha', resto > 4);
+  };
+  el.addEventListener('scroll', actualizar, { passive: true });
+  addEventListener('resize', actualizar);
+  actualizar();
+}
+
+/** Onda que nace donde se pulsa cualquier botón principal. */
+export function activarOndas() {
+  document.addEventListener('pointerdown', (e) => {
+    const boton = e.target.closest('.boton, .agregar');
+    if (!boton || boton.disabled || reducido()) return;
+    const r = boton.getBoundingClientRect();
+    const tam = Math.max(r.width, r.height) * 2.2;
+    const onda = document.createElement('span');
+    onda.className = 'onda';
+    Object.assign(onda.style, { width: `${tam}px`, height: `${tam}px`,
+      left: `${e.clientX - r.left - tam / 2}px`, top: `${e.clientY - r.top - tam / 2}px` });
+    boton.append(onda);
+    onda.addEventListener('animationend', () => onda.remove(), { once: true });
+  });
 }

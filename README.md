@@ -6,7 +6,7 @@ un pedido que falló en producción, y construir alrededor de él una **tienda e
 
 - **Backend:** Python 3.10+ · Flask · SQLite (librería estándar)
 - **Frontend:** HTML, CSS y JavaScript sin frameworks (módulos ES)
-- **Pruebas:** pytest · 62 pruebas (kata, suite de aceptación, servicios y API) + prueba de mutación
+- **Pruebas:** pytest · 73 pruebas (kata, suite de aceptación, servicios y API) + prueba de mutación
 
 Entregables del caso (lista de pruebas, bitácora, suite oculta, mutantes y reflexión):
 **[docs/ACTIVIDAD_XP.md](docs/ACTIVIDAD_XP.md)**
@@ -54,7 +54,7 @@ Los precios y totales **siempre** los calcula el backend con `pedido.py`; el nav
 
 ```
 pedido.py                 ← núcleo del kata (TDD): Item, Desglose, desglose_pedido, total_pedido
-test_pedido.py            ← 20 pruebas del kata (8 de referencia + 12 casos límite propios)
+test_pedido.py            ← 23 pruebas del kata (8 de referencia + 15 propias)
 test_suite_oculta.py      ← suite de aceptación del docente
 app.py                    ← arranque de Flask
 tienda/
@@ -86,16 +86,28 @@ scripts/mutantes.py       ← prueba de mutación automatizada
 | Programación en parejas | Protocolo ping-pong y bitácora en `docs/ACTIVIDAD_XP.md` |
 | Refactorización | Constantes con nombre, funciones pequeñas con nombre de regla, `Decimal` |
 | Diseño simple | Sin frameworks en el frontend; SQLite de la librería estándar; una sola fuente de verdad para precios |
-| Integración continua | `python -m pytest -q` ejecuta las 62 pruebas en menos de un segundo |
+| Integración continua | `python -m pytest -q` ejecuta las 73 pruebas en menos de un segundo |
 | Propiedad colectiva y estándares | Estilo y nombres en español consistentes en todas las capas |
 
 ## Interfaz
 
 Estilo minimalista de **mar profundo**: azules y cianes oscuros, **vidrio líquido opaco** (gradiente translúcido,
-desenfoque de fondo, brillo interior y un reflejo que sigue al puntero) y fondo con corrientes y burbujas lentas.
+desenfoque de fondo, brillo interior y un reflejo que sigue al puntero) y un fondo limpio con una luz difusa
+que sigue al mouse con inercia.
+
+Cada producto ocupa una fila compacta (unos 120 px): imagen pequeña con su descuento, nombre, presentación,
+estrellas y reseñas, precio con IVA incluido (y el anterior tachado), botón **Agregar** (que se convierte en
+selector de cantidad) y favoritos. Un botón cambia a vista de cuadrícula y la preferencia se recuerda. La ficha
+técnica completa vive en el detalle del producto. El chip **♥ Favoritos** filtra los productos guardados y, en el
+celular, una barra fija abajo muestra "Ver carrito · $total"; las categorías se difuminan en el borde para
+indicar que se pueden deslizar.
+
+El precio que ve el cliente lo calcula `pedido.precio_publico` (IVA incluido para gravados, redondeo comercial);
+el total del pedido sigue saliendo de `desglose_pedido`.
 
 Todas las animaciones comparten las mismas curvas (`--salida`, `--suave`, `--resorte`) para que cada transición
-conecte con la siguiente: las pestañas y categorías tienen una píldora que se desliza, las tarjetas entran en
-cascada, el detalle de producto crece desde la tarjeta pulsada (técnica FLIP), un punto de luz vuela en arco al
+conecte con la siguiente: las pestañas y categorías tienen una píldora que se desliza, cada producto entra
+rápido y escalonado solo la primera vez que aparece (con las estrellas llenándose y el sello de descuento), los botones
+muestran una onda donde se pulsan, el detalle de producto crece desde la tarjeta pulsada (técnica FLIP), un punto de luz vuela en arco al
 carrito, los totales cuentan hasta su nuevo valor, los pasos del checkout se deslizan lateralmente y la
 confirmación dibuja su check. Respeta `prefers-reduced-motion` y funciona en móvil.

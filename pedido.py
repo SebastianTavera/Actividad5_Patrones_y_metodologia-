@@ -80,3 +80,8 @@ def desglose_pedido(items: list[Item]) -> Desglose:
 
 def total_pedido(items: list[Item]) -> int:
     return desglose_pedido(items).total
+
+
+def precio_publico(precio: int, gravado: bool) -> int:
+    """Precio que ve el cliente en el catálogo: con IVA incluido si el producto es gravado (R2, R6)."""
+    return _al_peso(precio * (1 + TASA_IVA)) if gravado else precio

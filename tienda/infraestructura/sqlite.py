@@ -1,4 +1,5 @@
 """Adaptadores SQLite de los puertos del dominio (solo librería estándar)."""
+import json
 import sqlite3
 import threading
 from contextlib import contextmanager
@@ -18,7 +19,11 @@ CREATE TABLE IF NOT EXISTS productos (
     stock       INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
     descripcion TEXT    NOT NULL DEFAULT '',
     unidad      TEXT    NOT NULL DEFAULT 'und',
-    activo      INTEGER NOT NULL DEFAULT 1
+    activo      INTEGER NOT NULL DEFAULT 1,
+    precio_anterior INTEGER NOT NULL DEFAULT 0,
+    calificacion    REAL    NOT NULL DEFAULT 0,
+    resenas         INTEGER NOT NULL DEFAULT 0,
+    caracteristicas TEXT    NOT NULL DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS pedidos (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +49,14 @@ CREATE TABLE IF NOT EXISTS lineas_pedido (
 );
 """
 
+# Columnas agregadas después de la primera versión: se crean en bases de datos existentes.
+COLUMNAS_NUEVAS = {
+    "precio_anterior": "INTEGER NOT NULL DEFAULT 0",
+    "calificacion": "REAL NOT NULL DEFAULT 0",
+    "resenas": "INTEGER NOT NULL DEFAULT 0",
+    "caracteristicas": "TEXT NOT NULL DEFAULT '[]'",
+}
+
 
 class BaseDeDatos:
     """Una conexión por hilo; implementa la unidad de trabajo (transacciones anidables)."""
@@ -52,6 +65,13 @@ class BaseDeDatos:
         self._ruta = ruta
         self._local = threading.local()
         self.script(ESQUEMA)
+        self._migrar()
+
+    def _migrar(self) -> None:
+        existentes = {f["name"] for f in self.ejecutar("PRAGMA table_info(productos)")}
+        for nombre, definicion in COLUMNAS_NUEVAS.items():
+            if nombre not in existentes:
+                self.ejecutar(f"ALTER TABLE productos ADD COLUMN {nombre} {definicion}")
 
     @property
     def _conexion(self) -> sqlite3.Connection:
@@ -91,7 +111,10 @@ class BaseDeDatos:
 def _producto(fila: sqlite3.Row) -> Producto:
     return Producto(id=fila["id"], nombre=fila["nombre"], precio=fila["precio"],
                     categoria=fila["categoria"], gravado=bool(fila["gravado"]), stock=fila["stock"],
-                    descripcion=fila["descripcion"], unidad=fila["unidad"], activo=bool(fila["activo"]))
+                    descripcion=fila["descripcion"], unidad=fila["unidad"], activo=bool(fila["activo"]),
+                    precio_anterior=fila["precio_anterior"], calificacion=fila["calificacion"],
+                    resenas=fila["resenas"],
+                    caracteristicas=[tuple(c) for c in json.loads(fila["caracteristicas"] or "[]")])
 
 
 class SqliteProductos(CatalogoLectura, InventarioEscritura):
@@ -121,16 +144,20 @@ class SqliteProductos(CatalogoLectura, InventarioEscritura):
 
     def guardar(self, producto: Producto) -> Producto:
         valores = (producto.nombre, producto.precio, producto.categoria, int(producto.gravado),
-                   producto.stock, producto.descripcion, producto.unidad, int(producto.activo))
+                   producto.stock, producto.descripcion, producto.unidad, int(producto.activo),
+                   producto.precio_anterior, producto.calificacion, producto.resenas,
+                   json.dumps([list(c) for c in producto.caracteristicas], ensure_ascii=False))
         if producto.id is None:
             cursor = self._db.ejecutar(
-                "INSERT INTO productos (nombre, precio, categoria, gravado, stock, descripcion, unidad, activo)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", valores)
+                "INSERT INTO productos (nombre, precio, categoria, gravado, stock, descripcion, unidad, activo,"
+                " precio_anterior, calificacion, resenas, caracteristicas)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", valores)
             producto.id = cursor.lastrowid
         else:
             self._db.ejecutar(
-                "UPDATE productos SET nombre=?, precio=?, categoria=?, gravado=?, stock=?,"
-                " descripcion=?, unidad=?, activo=? WHERE id=?", valores + (producto.id,))
+                "UPDATE productos SET nombre=?, precio=?, categoria=?, gravado=?, stock=?, descripcion=?,"
+                " unidad=?, activo=?, precio_anterior=?, calificacion=?, resenas=?, caracteristicas=?"
+                " WHERE id=?", valores + (producto.id,))
         return producto
 
     def desactivar(self, producto_id: int) -> bool:

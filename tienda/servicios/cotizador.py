@@ -28,6 +28,8 @@ class Cotizacion:
         return {
             "lineas": [{"producto_id": l.producto_id, "nombre": l.nombre, "precio": l.precio,
                         "cantidad": l.cantidad, "gravado": l.gravado, "importe": l.importe,
+                        "precio_final": reglas.precio_publico(l.precio, l.gravado),
+                        "importe_final": reglas.precio_publico(l.importe, l.gravado),
                         "categoria": self.categorias.get(l.producto_id, "")}
                        for l in self.lineas],
             "subtotal": d.subtotal, "descuento": d.descuento, "iva": d.iva,

@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 
+from pedido import precio_publico
+
 from .errores import DatosInvalidos
 
 
@@ -17,6 +19,16 @@ class Producto:
     descripcion: str = ""
     unidad: str = "und"
     activo: bool = True
+    precio_anterior: int = 0          # precio de referencia tachado (0 = sin oferta)
+    calificacion: float = 0.0         # promedio de 0 a 5
+    resenas: int = 0
+    caracteristicas: list[tuple[str, str]] = field(default_factory=list)
+
+    @property
+    def descuento_pct(self) -> int:
+        if self.precio_anterior <= self.precio:
+            return 0
+        return round((self.precio_anterior - self.precio) * 100 / self.precio_anterior)
 
     def validar(self) -> None:
         errores = []
@@ -24,6 +36,10 @@ class Producto:
             errores.append("El nombre es obligatorio")
         if self.precio <= 0:
             errores.append("El precio debe ser mayor a 0")
+        if self.precio_anterior and self.precio_anterior <= self.precio:
+            errores.append("El precio anterior debe ser mayor al precio actual (o 0 si no hay oferta)")
+        if not 0 <= self.calificacion <= 5:
+            errores.append("La calificación debe estar entre 0 y 5")
         if self.stock < 0:
             errores.append("El stock no puede ser negativo")
         if not self.categoria.strip():
@@ -36,6 +52,11 @@ class Producto:
             "id": self.id, "nombre": self.nombre, "precio": self.precio,
             "categoria": self.categoria, "gravado": self.gravado, "stock": self.stock,
             "descripcion": self.descripcion, "unidad": self.unidad, "activo": self.activo,
+            "precio_anterior": self.precio_anterior, "descuento_pct": self.descuento_pct,
+            "precio_final": precio_publico(self.precio, self.gravado),
+            "precio_anterior_final": precio_publico(self.precio_anterior, self.gravado) if self.precio_anterior else 0,
+            "calificacion": self.calificacion, "resenas": self.resenas,
+            "caracteristicas": [list(c) for c in self.caracteristicas],
         }
 
 

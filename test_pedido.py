@@ -70,3 +70,8 @@ def test_redondeo_hacia_arriba_desde_medio_peso():         # 14 · R6 (*)
     # round() de Python usa redondeo bancario y daría 59.678.
     assert total_pedido([Item("aceite", 50_150, 1)]) == 59_679
 
+
+def test_varios_items_gravados_con_cantidad():             # 15 · R1 + R2 + R4
+    items = [Item("gaseosa", 5_000, 3), Item("galletas", 2_000, 4)]
+    assert total_pedido(items) == 31_370
+

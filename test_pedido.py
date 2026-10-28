@@ -110,3 +110,7 @@ def test_desglose_de_carrito_vacio_es_todo_cero():         # 20
 
 def test_precio_publico_de_producto_exento_no_cambia():   # 21 · R2
     assert precio_publico(4_900, gravado=False) == 4_900
+
+
+def test_precio_publico_de_producto_gravado_incluye_iva():  # 22 · R2 + R6
+    assert precio_publico(6_900, gravado=True) == 8_211

@@ -1,6 +1,8 @@
 # pedido.py
 from dataclasses import dataclass
 
+TASA_IVA = 0.19
+
 
 @dataclass(frozen=True)
 class Item:
@@ -13,4 +15,5 @@ class Item:
 def total_pedido(items):
     subtotal = sum(i.precio * i.cantidad for i in items)
     base_gravada = sum(i.precio * i.cantidad for i in items if i.gravado)
-    return round(subtotal + base_gravada * 0.19)
+    iva = base_gravada * TASA_IVA
+    return round(subtotal + iva)

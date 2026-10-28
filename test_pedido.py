@@ -31,3 +31,8 @@ def test_cobro_de_domicilio_bajo_el_umbral():              # 5 · R4
 def test_descuento_en_el_umbral():                         # 6 · R3 (*)
     assert total_pedido([Item("arroz", 100_000, 1, gravado=False)]) == 90_000
 
+
+def test_pedido_mixto_descuento_antes_del_iva():           # 7 · R2 + R3
+    items = [Item("gaseosa", 80_000, 1), Item("arroz", 40_000, 1, gravado=False)]
+    assert total_pedido(items) == 121_680
+

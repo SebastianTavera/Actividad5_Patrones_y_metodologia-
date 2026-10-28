@@ -11,4 +11,4 @@ class Item:
 
 
 def total_pedido(items):
-    return sum(i.precio for i in items)
+    return sum(i.precio * i.cantidad for i in items)

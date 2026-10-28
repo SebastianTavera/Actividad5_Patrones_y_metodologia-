@@ -47,3 +47,7 @@ def test_cantidad_cero_es_invalida():                      # 8 · R5 (*)
 def test_domicilio_gratis_en_el_umbral_exacto():           # 9 · R4 (*) mata al mutante M2
     assert total_pedido([Item("arroz", 50_000, 1, gravado=False)]) == 50_000
 
+
+def test_justo_bajo_el_umbral_de_domicilio():              # 10 · R4 (*)
+    assert total_pedido([Item("arroz", 49_999, 1, gravado=False)]) == 53_999
+

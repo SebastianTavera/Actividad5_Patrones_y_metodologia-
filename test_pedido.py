@@ -55,3 +55,7 @@ def test_justo_bajo_el_umbral_de_domicilio():              # 10 · R4 (*)
 def test_justo_bajo_el_umbral_de_descuento():              # 11 · R3 (*) refuerza M1
     assert total_pedido([Item("arroz", 99_999, 1, gravado=False)]) == 99_999
 
+
+def test_descuento_en_el_umbral_con_producto_gravado():    # 12 · R2 + R3 (*)
+    assert total_pedido([Item("licuadora", 100_000, 1)]) == 107_100
+

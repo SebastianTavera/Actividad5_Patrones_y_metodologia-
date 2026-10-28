@@ -15,3 +15,7 @@ def test_carrito_vacio_cuesta_cero():                      # 1 · R1
 def test_un_producto_exento():                             # 2 · R1, R2
     assert total_pedido([Item("arroz", 60_000, 1, gravado=False)]) == 60_000
 
+
+def test_cantidad_multiplica_precio():                     # 3 · R1
+    assert total_pedido([Item("arroz", 30_000, 2, gravado=False)]) == 60_000
+

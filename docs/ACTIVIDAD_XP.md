@@ -6,6 +6,7 @@
 | Entregable de la guía | Dónde está |
 |---|---|
 | 1. `pedido.py` y `test_pedido.py` con todas las pruebas en verde | [`pedido.py`](../pedido.py), [`test_pedido.py`](../test_pedido.py) |
+| Evidencia del ciclo TDD (cada prueba vista en rojo antes del código) | [`EVIDENCIA_TDD.md`](EVIDENCIA_TDD.md) y la rama `claude/kata-tdd-evidencia` |
 | 2. Bitácora de la pareja | [Paso 2](#paso-2--acuerdos-y-bitácora-de-la-pareja) |
 | 3. Registro de la suite oculta y de los 3 mutantes | [Paso 4](#paso-4--medición-de-la-calidad) · [`scripts/mutantes.py`](../scripts/mutantes.py) |
 | 4. Respuestas a las 5 preguntas de reflexión | [4.4](#44-preguntas-de-reflexión) |
@@ -106,7 +107,9 @@ nombre de la regla que protege y un comentario con el número de caso y la regla
 
 ## Paso 3 · Kata TDD
 
-Resultado final en [`pedido.py`](../pedido.py). Decisiones de diseño:
+Resultado final en [`pedido.py`](../pedido.py). El kata quedó registrado **un commit por paso** (`ROJO` → `VERDE` →
+`REFACTOR`), con la salida real de pytest en cada mensaje: ver [`EVIDENCIA_TDD.md`](EVIDENCIA_TDD.md) o
+`git log --oneline -- pedido.py test_pedido.py`. Decisiones de diseño:
 
 - **Diseño simple**: una función pública por responsabilidad (`desglose_pedido`, `total_pedido`) y funciones
   privadas pequeñas con nombre de regla (`_validar_cantidades`, `_tasa_descuento`, `_domicilio`, `_al_peso`).

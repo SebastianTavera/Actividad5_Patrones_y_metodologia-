@@ -8,6 +8,8 @@ un pedido que falló en producción, y construir alrededor de él una **tienda e
 - **Frontend:** HTML, CSS y JavaScript sin frameworks (módulos ES)
 - **Pruebas:** pytest · 62 pruebas (kata, suite de aceptación, servicios y API) + prueba de mutación
 
+Evidencia del ciclo TDD, un commit por cada paso rojo → verde → refactor: **[docs/EVIDENCIA_TDD.md](docs/EVIDENCIA_TDD.md)**
+
 Entregables del caso (lista de pruebas, bitácora, suite oculta, mutantes y reflexión):
 **[docs/ACTIVIDAD_XP.md](docs/ACTIVIDAD_XP.md)**
 

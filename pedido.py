@@ -27,6 +27,15 @@ class Item:
     gravado: bool = True
 
 
+@dataclass(frozen=True)
+class Desglose:
+    subtotal: int
+    descuento: int
+    iva: int
+    domicilio: int
+    total: int
+
+
 def _al_peso(valor: Decimal) -> int:
     return int(valor.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
@@ -45,9 +54,11 @@ def _domicilio(subtotal: int) -> int:
     return COSTO_DOMICILIO if subtotal < UMBRAL_DOMICILIO else 0
 
 
-def total_pedido(items: list[Item]) -> int:
+def desglose_pedido(items: list[Item]) -> Desglose:
+    """Calcula cada componente del total. Los componentes se muestran redondeados
+    al peso, pero el total se calcula con los valores exactos (R6)."""
     if not items:
-        return 0
+        return Desglose(0, 0, 0, 0, 0)
     _validar_cantidades(items)
 
     subtotal = sum(i.precio * i.cantidad for i in items)
@@ -56,4 +67,16 @@ def total_pedido(items: list[Item]) -> int:
     descuento = subtotal * tasa
     iva = base_gravada * (1 - tasa) * TASA_IVA
     domicilio = _domicilio(subtotal)
-    return _al_peso(subtotal - descuento + iva + domicilio)
+    total = subtotal - descuento + iva + domicilio
+
+    return Desglose(
+        subtotal=subtotal,
+        descuento=_al_peso(descuento),
+        iva=_al_peso(iva),
+        domicilio=domicilio,
+        total=_al_peso(total),
+    )
+
+
+def total_pedido(items: list[Item]) -> int:
+    return desglose_pedido(items).total

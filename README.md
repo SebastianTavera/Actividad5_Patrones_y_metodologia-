@@ -1,6 +1,7 @@
 # MercaBarrio · Tienda de barrio con Extreme Programming
 
-Actividad 5 · Patrones y Metodologías para la Construcción de Software · Caso de estudio XP (Sesión 11).
+Actividad 5 · Patrones y Metodologías para la Construcción de Software · Caso de estudio XP (Sesión 11) y caso de
+Tipos de pruebas y herramientas (Sesión 13).
 
 MercaBarrio es una startup bogotana de pedidos para tiendas de barrio que publicó un cálculo de totales con
 errores: cobraba IVA sobre la canasta básica y daba domicilio gratis un peso antes de lo debido. En este proyecto
@@ -11,9 +12,10 @@ suite de aceptación y prueba de mutación, y alrededor de él se construye una 
 |---|---|
 | **Backend** | Python 3.10+ · Flask · SQLite (librería estándar) |
 | **Frontend** | HTML, CSS y JavaScript sin frameworks (módulos ES) |
-| **Pruebas** | pytest · 73 pruebas + prueba de mutación (3 de 3 mutantes detectados) |
+| **Pruebas** | pytest · 102 pruebas + prueba de mutación (3 de 3 mutantes detectados) · coverage.py |
 | **Entregables del caso** | [docs/ACTIVIDAD_XP.md](docs/ACTIVIDAD_XP.md) |
 | **Evidencia TDD** | [docs/EVIDENCIA_TDD.md](docs/EVIDENCIA_TDD.md): un commit por cada paso rojo → verde → refactor |
+| **Caso Sesión 13** | [docs/ACTIVIDAD_PRUEBAS.md](docs/ACTIVIDAD_PRUEBAS.md): caja negra, caja blanca, prueba de fuego y matriz de herramientas |
 
 ---
 
@@ -50,15 +52,25 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-Solo se instalan dos paquetes: `flask` y `pytest`.
+Se instalan tres paquetes: `flask`, `pytest` y `coverage`.
 
 ### Paso 3 · Ejecutar las pruebas
 
 ```bash
-python -m pytest -q                       # las 73 pruebas → "73 passed"
+python -m pytest -q                       # las 102 pruebas → "102 passed"
 python -m pytest -q test_pedido.py        # solo el kata TDD → 23 pruebas
 python -m pytest -q test_suite_oculta.py  # solo la suite de aceptación → 8 pruebas
 python scripts/mutantes.py                # prueba de mutación → "Mutantes detectados: 3 de 3"
+```
+
+Caso de la Sesión 13 (`tarifa_domicilio`):
+
+```bash
+python -m pytest -q test_equivalencia.py test_valores_limite.py test_ramas.py   # 8 + 16 + 5 = 29 pruebas
+python -m coverage run --branch -m pytest -q test_ramas.py                      # cobertura de ramas
+python -m coverage report -m                                                    # domicilio.py → 100 %
+python scripts/prueba_de_fuego.py                                               # los 3 conjuntos contra la versión del equipo
+python scripts/prueba_de_fuego.py --mutantes                                    # qué conjunto detecta cada cambio de comparación
 ```
 
 ### Paso 4 · Abrir la tienda
@@ -161,13 +173,20 @@ par: la solución de referencia de la guía da 59.678 donde corresponde 59.679.
 ├── pedido.py                     Reglas de negocio del kata (TDD)
 ├── test_pedido.py                23 pruebas del kata
 ├── test_suite_oculta.py          8 pruebas de aceptación del docente
+├── domicilio.py                  tarifa_domicilio (código bajo prueba de la Sesión 13)
+├── test_equivalencia.py          Caja negra: partición de equivalencia (8 casos)
+├── test_valores_limite.py        Caja negra: valores límite (16 casos)
+├── test_ramas.py                 Caja blanca: conjunto mínimo para el 100 % de ramas (5 casos)
 ├── app.py                        Arranca Flask, sirve la página y la API
 ├── requirements.txt              flask, pytest
 ├── pytest.ini                    Le dice a pytest dónde están las pruebas
 ├── scripts/
-│   └── mutantes.py               Prueba de mutación automatizada (M1, M2, M3)
+│   ├── mutantes.py               Prueba de mutación automatizada (M1, M2, M3)
+│   ├── prueba_de_fuego.py        Registro de la prueba de fuego y mutantes de domicilio.py
+│   └── domicilio_equipo_ejemplo.py  Versión de ejemplo con dos defectos (reemplazable por la del docente)
 ├── docs/
-│   └── ACTIVIDAD_XP.md           Entregables del caso de estudio
+│   ├── ACTIVIDAD_XP.md           Entregables del caso de estudio XP
+│   └── ACTIVIDAD_PRUEBAS.md      Entregables del caso de la Sesión 13
 ├── tienda/                       Backend de la tienda, en capas
 │   ├── dominio/
 │   │   ├── modelos.py            Producto, Cliente, Pedido, LineaPedido, estados del pedido
@@ -308,6 +327,9 @@ En el navegador (`localStorage`) se guardan solo preferencias de quien navega: c
 | `test_suite_oculta.py` | 8 | Suite de aceptación del docente |
 | `tests/test_servicios.py` | 27 | Cotizador, compra, stock, estados, cancelación, catálogo, inventario y reportes con repositorios en memoria |
 | `tests/test_api.py` | 15 | Endpoints con Flask y SQLite real: compra completa, errores HTTP, clave de admin, migración de bases viejas |
+| `test_equivalencia.py` | 8 | `tarifa_domicilio`: 11 clases de equivalencia (4 casos válidos y 4 inválidos) |
+| `test_valores_limite.py` | 16 | `tarifa_domicilio`: dos casos por cada frontera de distancia, hora y regla E5 |
+| `test_ramas.py` | 5 | `tarifa_domicilio`: 12 de 12 ramas (V(G) = 7) |
 
 **Prueba de mutación** (`python scripts/mutantes.py`):
 
@@ -339,7 +361,7 @@ Con solo las 8 pruebas de referencia de la guía, M2 sobrevive. El caso 9 es el 
 | Programación en parejas | Protocolo ping-pong, acuerdos y bitácora en `docs/ACTIVIDAD_XP.md` |
 | Refactorización | Constantes con nombre, funciones pequeñas con nombre de regla, `Decimal` para el redondeo |
 | Diseño simple | Sin frameworks en el frontend; SQLite de la librería estándar; una sola fuente de verdad para el dinero |
-| Integración continua | `python -m pytest -q` ejecuta las 73 pruebas en menos de un segundo |
+| Integración continua | `python -m pytest -q` ejecuta las 102 pruebas en menos de un segundo |
 | Propiedad colectiva y estándares | Nombres en español y el mismo estilo en todas las capas |
 
 ---
